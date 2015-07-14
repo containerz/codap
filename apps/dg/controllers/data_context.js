@@ -1051,6 +1051,7 @@ DG.DataContext = SC.Object.extend((function() // closure
    */
   addCollection: function( iCollection) {
     function getCollection(iCollectionRecord) {
+      DG.logWarn('Instantiating collection from collectionRecord');
       return DG.Collection.create({ collectionRecord: iCollectionRecord });
     }
     var theID = iCollection && iCollection.get('id'),
