@@ -375,15 +375,15 @@ DG.gameSelectionController = SC.ObjectController.create((function() // closure
    */
   init: function() {
     sc_super();
-    this.buildGamesMenu( DG.IS_SRRI_BUILD, DG.IS_DEV_BUILD);
-    this.menuPane = SC.MenuPane.create({
-              items: this.games,
-              itemTitleKey: 'name',
-              layout: { width: 200/*, height: 200*/ }
-            });
+    //this.buildGamesMenu( DG.IS_SRRI_BUILD, DG.IS_DEV_BUILD);
+    //this.menuPane = SC.MenuPane.create({
+    //          items: this.games,
+    //          itemTitleKey: 'name',
+    //          layout: { width: 200/*, height: 200*/ }
+    //        });
 
     // Specify the default game
-    this.setDefaultGame();
+    //this.setDefaultGame();
   },
 
   /**

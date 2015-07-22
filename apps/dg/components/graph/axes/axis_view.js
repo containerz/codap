@@ -379,9 +379,12 @@ DG.AxisView = DG.RaphaelBaseView.extend(DG.GraphDropTarget,
           return tHeight;
         }.property('frame'),
 
+/*
         numberOfCells: function () {
           return this.getPath('model.numberOfCells');
         }.property('model.numberOfCells'),
+*/
+        numberOfCellsBinding: 'model.numberOfCells',
 
         /**
          The total distance in pixels between one cell and the next without any "slop" at the ends.

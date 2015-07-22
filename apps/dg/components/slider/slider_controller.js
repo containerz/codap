@@ -47,11 +47,14 @@ DG.SliderController = DG.ComponentController.extend(
    */
   animationSign: 1,
   
+/*
   isAnimating: function() {
     // !! guarantees a boolean return for null, undefined, etc.
     return !!this.getPath('valueAnimator.isAnimating');
   }.property('valueAnimator.isAnimating'),
-  
+*/
+    isAnimatingBinding: 'valueAnimator.isAnimating',
+
   modelDidChange: function() {
     var sliderModel = this.getPath('model.content');
     this.set('sliderModel', sliderModel);
@@ -119,7 +122,7 @@ DG.SliderController = DG.ComponentController.extend(
       tInc = tLower - tTrial;
     }
     return this.animationSign * tInc;
-  }.property('axisView.increment', 'axisModel.lowerBound', 'axisModel.upperBound', 'sliderModel.value'),
+  }.property('axisView', 'axisModel.lowerBound', 'axisModel.upperBound', 'sliderModel.value'),
 
   createComponentStorage: function() {
     var storage = {},

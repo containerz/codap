@@ -41,24 +41,32 @@ DG.PlotLayer = SC.Object.extend( DG.Destroyable,
   /**
    * @property {Raphael paper}
    */
+/*
   paper: function() {
     return this.getPath('paperSource.paper');
   }.property('paperSource.paper'),
-
+*/
+  paperBinding: 'paperSource.paper',
   /**
    * @property {DG.LayerManager}
    */
+/*
   layerManager: function() {
     return this.getPath('paperSource.layerManager');
   }.property('paperSource.layerManager' ),
+*/
+  layerManagerBinding: 'paperSource.layerManager',
 
   /**
    * Get from paperSource
    * @property {}
    */
+/*
   frame: function() {
     return this.getPath('paperSource.frame');
   }.property('paperSource.frame'),
+*/
+  frameBinding: 'paperSource.frame',
 
   /**
    * Get from paperSource
@@ -102,10 +110,13 @@ DG.PlotLayer = SC.Object.extend( DG.Destroyable,
   /**
     @property { DG.DataContext }  The data context
   */
+/*
   dataContext: function() {
     return this.getPath('model.dataContext');
   }.property('model.dataContext'),
-   
+*/
+  dataContextBinding: 'model.dataContext',
+
   selection: null,
   selectionBinding: '*model.casesController.selection',
 

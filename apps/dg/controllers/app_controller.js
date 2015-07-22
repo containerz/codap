@@ -53,15 +53,15 @@ DG.appController = SC.Object.create((function () // closure
      */
     init: function () {
       sc_super();
-      this.fileMenuPane = SC.MenuPane.create({
+      this.fileMenuPane = SC.MenuPane.extend({
         items: this.get('fileMenuItems'),
         layout: { width: 165 }
       });
-      this.optionMenuPane = SC.MenuPane.create({
+      this.optionMenuPane = SC.MenuPane.extend({
         items: this.get('optionMenuItems'),
         layout: { width: 150 }
       });
-      this.guideMenuPane = SC.MenuPane.create({
+      this.guideMenuPane = SC.MenuPane.extend({
         layout: { width: 250 }
       });
 
@@ -183,7 +183,7 @@ DG.appController = SC.Object.create((function () // closure
     loginDidChange: function () {
       var isDeveloper = DG.authorizationController.get('isUserDeveloper');
       this._fileMenuIncludesDevItems = this._fileMenuIncludesDevItems || isDeveloper;
-      this.fileMenuPane.set('items', this.get('fileMenuItems'));
+      this.get('fileMenuPane').set('items', this.get('fileMenuItems'));
     }.observes('DG.authorizationController.isUserDeveloper'),
 
     optionMenuItems: function () {

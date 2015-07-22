@@ -230,8 +230,10 @@ DG.ComponentView = SC.View.extend(
         }),
         classNames: ['component-border'],
         setContentView: function (iContentView) {
+          //SC.Observers.suspendPropertyObserving();
           this.set('contentView', iContentView);
           this.get('gearView').set('contentView', iContentView);
+          //SC.Observers.resumePropertyObserving();
         }
 
       }), // containerView

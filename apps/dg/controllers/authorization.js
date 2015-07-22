@@ -72,8 +72,8 @@ return {
   init: function() {
     sc_super();
 
-    this.set('currEdit', DG.Authorization.create({user: '', passwd: ''}));
-    this.set('currLogin', DG.Authorization.create({}));
+    //this.set('currEdit', DG.Authorization.create({user: '', passwd: ''}));
+    //this.set('currLogin', DG.Authorization.create({}));
 
     if (DG.documentServer) {
       this.set('storageInterface', DG.DocumentServerStorage.create());

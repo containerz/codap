@@ -38,18 +38,20 @@ DG.TitleBarGearView = SC.ImageView.extend(
         this.menu = SC.MenuPane.create( {
                 layout: { width: 200, height: 150 }
                 });
+        this.addProbe('controller');
       },
 
       controller: function() {
-        return !SC.none( this.contentView) ?
-                this.contentView.get('controller') : null;
-      }.property('contentView', 'contentView.controller'),
+        var tContentView = this.get('contentView');
+        return !SC.none( tContentView) ?
+          tContentView.get('controller') : null;
+      }.property('contentView'),
 
       controllerItems: function() {
         var tController = this.get('controller');
         return !SC.none( tController) ?
                 tController.get('gearMenuItems') : [];
-      }.property('controller', 'controller.gearMenuItems'),
+      }.property('controller.gearMenuItems'),
 
       updateVisibility: function() {
         var items = this.get('controllerItems'),

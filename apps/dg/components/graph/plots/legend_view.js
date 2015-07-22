@@ -322,9 +322,12 @@ DG.LegendView = DG.RaphaelBaseView.extend( DG.GraphDropTarget,
        * isNumeric
        * @property {Boolean}
        */
+/*
       isNumeric: function() {
         return this.getPath('model.attributeDescription.isNumeric');
       }.property('model.attributeDescription.isNumeric'),
+*/
+      isNumericBinding: 'model.attributeDescription.isNumeric',
 
       attributeTypeDidChange: function() {
         this.displayDidChange();

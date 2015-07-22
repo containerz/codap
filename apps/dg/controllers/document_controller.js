@@ -696,11 +696,11 @@ DG.DocumentController = SC.Object.extend(
     addGraph: function( iParentView, iComponent) {
       var tView, docController = this;
 
-      DG.UndoHistory.execute(DG.Command.create({
-        name: "graphComponent.create",
-        undoString: 'DG.Undo.graphComponent.create',
-        redoString: 'DG.Redo.graphComponent.create',
-        execute: function() {
+      //DG.UndoHistory.execute(DG.Command.create({
+      //  name: "graphComponent.create",
+      //  undoString: 'DG.Undo.graphComponent.create',
+      //  redoString: 'DG.Redo.graphComponent.create',
+      //  execute: function() {
           SC.Benchmark.start('addGraph');
           var tGraphModel = DG.GraphModel.create(),
             tGraphController = DG.GraphController.create(),
@@ -722,22 +722,22 @@ DG.DocumentController = SC.Object.extend(
 
           SC.Benchmark.end('addGraph');
           SC.Benchmark.log('addGraph');
-        },
-        undo: function() {
-          tView.parentView.removeComponentView(tView);
-        }
-      }));
+        //},
+        //undo: function() {
+        //  tView.parentView.removeComponentView(tView);
+        //}
+      //}));
       return tView;
     },
 
     addText: function( iParentView, iComponent) {
       var tView, docController = this;
 
-      DG.UndoHistory.execute(DG.Command.create({
-        name: "textComponent.create",
-        undoString: 'DG.Undo.textComponent.create',
-        redoString: 'DG.Redo.textComponent.create',
-        execute: function() {
+      //DG.UndoHistory.execute(DG.Command.create({
+      //  name: "textComponent.create",
+      //  undoString: 'DG.Undo.textComponent.create',
+      //  redoString: 'DG.Redo.textComponent.create',
+      //  execute: function() {
           tView = docController.createComponentView(iComponent, {
                                 parentView: iParentView,
                                 controller: DG.TextComponentController.create(),
@@ -747,11 +747,11 @@ DG.DocumentController = SC.Object.extend(
                                 title: 'DG.DocumentController.textTitle'.loc(), // "Text"
                                 isResizable: true}
                               );
-        },
-        undo: function() {
-          tView.parentView.removeComponentView(tView);
-        }
-      }));
+      //  },
+      //  undo: function() {
+      //    tView.parentView.removeComponentView(tView);
+      //  }
+      //}));
       return tView;
     },
 
