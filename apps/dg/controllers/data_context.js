@@ -147,7 +147,7 @@ DG.DataContext = SC.Object.extend((function() // closure
      *
      * Centralized method for Component layer objects.
      * @param iCaseID
-     * @returns {*}
+     * @returns {DG.Case|undefined}
      */
   getCaseByID: function(iCaseID) {
     return DG.store.find( DG.Case, iCaseID);
@@ -266,35 +266,39 @@ DG.DataContext = SC.Object.extend((function() // closure
   
   /**
     Creates a collection according to the arguments specified.
-    @param  {Object}                iChange
-              {String}              iChange.operation -- 'createCollection'
-              {Object}              iChange.properties -- properties of the new collection
-              {Array of Object}     iChange.attributes -- array of attribute specifications
-    @returns  {Object}              a result object
-                {Boolean}           result.success -- true on success, false on failure
-                {DG.CollectionClient} result.collection -- the newly created collection
+    @param  {{operation:String, properties: Object, attributes: [DG.Attribute]}} iChange
+                                    iChange.operation -- 'createCollection'
+                                    iChange.properties -- properties of the new collection
+                                    iChange.attributes -- array of attribute specifications
+    @returns  {{success: boolean, collection: DG.CollectionClient}} a result object
+                                    result.success -- true on success, false on failure
+                                    result.collection -- the newly created collection
    */
   doCreateCollection: function( iChange) {
     function addParentAttributes(parentCollection, thisCollection) {
+      var parentAttributes = [];
       parentCollection.forEachAttribute(function (attribute) {
         var props = attribute.toArchive();
         props.guid = undefined;
-        thisCollection.guaranteeAttribute(props);
+        parentAttributes.push(props);
       });
+      return parentAttributes;
     }
     var tCollection = this.guaranteeCollection( iChange.properties),
-      tParentID = tCollection.getParentCollectionID();
+      tParentID = tCollection.getParentCollectionID(),
+      attributes = iChange.attributes;
     if (tCollection) {
-      iChange.attributes.forEach( function( iAttrSpec) {
+      if (!SC.none(tParentID)) {
+        attributes = addParentAttributes(
+          this.getCollectionByID(tParentID), tCollection).concat(attributes);
+      }
+      attributes.forEach( function( iAttrSpec) {
                             tCollection.guaranteeAttribute( iAttrSpec);
                           });
       // if the collection has a root collection, append the parent attributes
-      if (!SC.none(tParentID)) {
-        addParentAttributes(this.getCollectionByID(tParentID), tCollection);
-      }
       // if this is a recreation of the collection make sure the ordering corresponds
       // to DI expectations.
-      tCollection.reorderAttributes(iChange.attributes.getEach('name'));
+      tCollection.reorderAttributes(attributes.getEach('name'));
       return { success: true, collection: tCollection };
     }
     return { success: false };
@@ -331,21 +335,25 @@ DG.DataContext = SC.Object.extend((function() // closure
       }
       return rslt;
     }.bind(this);
+
+    var createOneCase = function( iValues) {
+      var newCase = collection.createCase( iChange.properties);
+      if( newCase) {
+        if( !SC.none( iValues)) {
+          collection.setCaseValuesFromArray( newCase, parentValues.concat(iValues));
+          DG.store.commitRecords();
+        }
+        result.success = true;
+        result.caseIDs.push( newCase.get('id'));
+      }
+    }.bind( this);
+
     var collection,
         valuesArrays,
         parentIsValid = true,
-        result = { success: false, caseIDs: [] },
-        createOneCase = function( iValues) {
-          var newCase = collection.createCase( iChange.properties);
-          if( newCase) {
-            if( !SC.none( iValues)) {
-              collection.setCaseValuesFromArray( newCase, iValues);
-              DG.store.commitRecords();
-            }
-            result.success = true;
-            result.caseIDs.push( newCase.get('id'));
-          }
-        }.bind( this);
+        parentCase,
+        parentValues = [],
+        result = { success: false, caseIDs: [] };
 
     if( !iChange.collection) {
       iChange.collection = this.get('childCollection');
@@ -363,6 +371,12 @@ DG.DataContext = SC.Object.extend((function() // closure
 
     if (typeof iChange.properties.parent !== 'object') {
       parentIsValid = validateParent(collection, iChange.properties.parent);
+      if (iChange.properties.parent && parentIsValid) {
+        parentCase = this.getCaseByID(iChange.properties.parent);
+        parentCase.get('collection').getAttributeIDs().forEach(function (attributeID) {
+          parentValues.push(parentCase.getValue(attributeID));
+        });
+      }
     }
     if( collection && parentIsValid) {
       valuesArrays = iChange.values || [ [] ];
