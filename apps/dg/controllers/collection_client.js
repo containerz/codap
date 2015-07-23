@@ -413,7 +413,7 @@ DG.CollectionClient = SC.Object.extend(
   
   /**
     Applies the specified function to each attribute in the collection.
-    @param    {Function}      Function to be applied to each attribute
+    @param    {Function(attribute)} iFunction     Function to be applied to each attribute
     @returns  {DG.CollectionClient} this, for use in chaining method invocations
    */
   forEachAttribute: function( iFunction) {
@@ -423,7 +423,7 @@ DG.CollectionClient = SC.Object.extend(
 
   /**
     Returns an array containing the IDs of every case.
-    @returns  {Array of Number}   The array of case IDs
+    @returns  {[Number]}   The array of case IDs
    */
   getCaseIDs: function() {
     return this.casesController.getEach('id');
@@ -439,7 +439,7 @@ DG.CollectionClient = SC.Object.extend(
 
   /**
     Returns the case at the specified index within the collection.
-    @param    {Number}    The index of the case to be returned
+    @param    {Number}    iCaseIndex The index of the case to be returned
     @returns  {DG.Case}   The case at the specified index
    */
   getCaseAt: function(iCaseIndex) {
