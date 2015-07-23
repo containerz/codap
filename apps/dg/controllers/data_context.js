@@ -275,11 +275,23 @@ DG.DataContext = SC.Object.extend((function() // closure
                 {DG.CollectionClient} result.collection -- the newly created collection
    */
   doCreateCollection: function( iChange) {
-    var tCollection = this.guaranteeCollection( iChange.properties);
+    function addParentAttributes(parentCollection, thisCollection) {
+      parentCollection.forEachAttribute(function (attribute) {
+        var props = attribute.toArchive();
+        props.guid = undefined;
+        thisCollection.guaranteeAttribute(props);
+      });
+    }
+    var tCollection = this.guaranteeCollection( iChange.properties),
+      tParentID = tCollection.getParentCollectionID();
     if (tCollection) {
       iChange.attributes.forEach( function( iAttrSpec) {
                             tCollection.guaranteeAttribute( iAttrSpec);
                           });
+      // if the collection has a root collection, append the parent attributes
+      if (!SC.none(tParentID)) {
+        addParentAttributes(this.getCollectionByID(tParentID), tCollection);
+      }
       // if this is a recreation of the collection make sure the ordering corresponds
       // to DI expectations.
       tCollection.reorderAttributes(iChange.attributes.getEach('name'));
