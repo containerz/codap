@@ -557,43 +557,45 @@ DG.DataContext = SC.Object.extend((function() // closure
             }
           }
       }.bind( this));
-      return { success: true };
-    }
-    
-    // If attributes are specified, set the values individually.
-    // Look up the attributes
-    iChange.attributeIDs.forEach(function (attrID) {
-      var attrSpec = this.getAttrRefByID( attrID);
-      attrSpec.attributeID = attrID;
-      attrSpecs.push( attrSpec);
-    });
-    if (childCollection) {
+    } else {
+      // If attributes are specified, set the values individually.
+      // Look up the attributes
       iChange.attributeIDs.forEach(function (attrID) {
-        var attrSpec = this.getAttrRefByID( attrID),
-          attrName = attrSpec.name,
-          childAttrSpec = childCollection.getAttributeByName(attrName);
-        childAttrSpecs.push( childAttrSpec);
-      }.bind(this));
-    }
-
-    // Loop through the cases
-    for( c = 0; c < caseCount; ++c) {
-      var tCase = iChange.cases.objectAt( c);
-      iChange.caseIDs.push( tCase.get('id'));
-      // Change the case values
-      tCase.beginCaseValueChanges();
-      // Loop through the attributes setting each value
-      for( a = 0; a < attrCount; ++a) {
-        tCase.setValue( attrSpecs[a].attributeID, iChange.values[a][c]);
-        if (tCase.children) {
-          tCase.children.forEach(function (child) {
-            iChange.casesIDs.push(child.get('id'));
-            child.setValue( childAttrSpecs[a].attributeID, iChange.values[a][c]);
-          });
-        }
+        var attrSpec = this.getAttrRefByID( attrID);
+        attrSpec.attributeID = attrID;
+        attrSpecs.push( attrSpec);
+      });
+      if (childCollection) {
+        iChange.attributeIDs.forEach(function (attrID) {
+          var attrSpec = this.getAttrRefByID( attrID),
+            attrName = attrSpec.name,
+            childAttrSpec = childCollection.getAttributeByName(attrName);
+          childAttrSpecs.push( childAttrSpec);
+        }.bind(this));
       }
-      tCase.endCaseValueChanges();
+
+      // Loop through the cases
+      for( c = 0; c < caseCount; ++c) {
+        var tCase = iChange.cases.objectAt( c);
+        iChange.caseIDs.push( tCase.get('id'));
+        // Change the case values
+        tCase.beginCaseValueChanges();
+        // Loop through the attributes setting each value
+        for( a = 0; a < attrCount; ++a) {
+          tCase.setValue( attrSpecs[a].attributeID, iChange.values[a][c]);
+          if (tCase.children) {
+            tCase.children.forEach(function (child) {
+              iChange.casesIDs.push(child.get('id'));
+              child.setValue( childAttrSpecs[a].attributeID, iChange.values[a][c]);
+            });
+          }
+        }
+        tCase.endCaseValueChanges();
+      }
     }
+    // If we have a child collection, then we would have modified this, so
+    // we cause listeners to invalidate everything.
+    if (childCollection) { delete iChange.cases; }
     return { success: true };
   },
 
