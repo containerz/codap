@@ -540,26 +540,40 @@ DG.DataContext = SC.Object.extend((function() // closure
         attrCount = iChange.attributeIDs ? iChange.attributeIDs.get('length') : 0,
         valueArrayCount = iChange.values.get('length'),
         attrSpecs = [],
+        childCollection = this.getChildCollection(iChange.collection),
+        childAttrSpecs = [],
         a, c;
-    
+
+    iChange.caseIDs = [];
     // If no attributes were specified, set them all using setCaseValuesFromArray().
     // This is primarily used by the Game API to set all values of a case.
     if( (caseCount > 0) && (attrCount === 0) && (valueArrayCount > 0)) {
       iChange.cases.forEach( function( iCase, iIndex) {
-                                if( iCase && !iCase.get('isDestroyed'))
-                                  this.setCaseValuesFromArray( iCase, iChange.values[ iIndex], iChange.collection);
-                             }.bind( this));
+        var caseIDs;
+          if( iCase && !iCase.get('isDestroyed')) {
+            caseIDs = this.setCaseValuesFromArray( iCase, iChange.values[ iIndex], iChange.collection);
+            if (caseIDs.length > 0) {
+              Array.prototype.push.apply(iChange.caseIDs, caseIDs);
+            }
+          }
+      }.bind( this));
       return { success: true };
     }
     
     // If attributes are specified, set the values individually.
-    iChange.caseIDs = [];
     // Look up the attributes
-    for( a = 0; a < attrCount; ++a) {
-      var attrID = iChange.attributeIDs.objectAt( a),
-          attrSpec = this.getAttrRefByID( attrID);
+    iChange.attributeIDs.forEach(function (attrID) {
+      var attrSpec = this.getAttrRefByID( attrID);
       attrSpec.attributeID = attrID;
       attrSpecs.push( attrSpec);
+    });
+    if (childCollection) {
+      iChange.attributeIDs.forEach(function (attrID) {
+        var attrSpec = this.getAttrRefByID( attrID),
+          attrName = attrSpec.name,
+          childAttrSpec = childCollection.getAttributeByName(attrName);
+        childAttrSpecs.push( childAttrSpec);
+      }.bind(this));
     }
 
     // Loop through the cases
@@ -571,6 +585,12 @@ DG.DataContext = SC.Object.extend((function() // closure
       // Loop through the attributes setting each value
       for( a = 0; a < attrCount; ++a) {
         tCase.setValue( attrSpecs[a].attributeID, iChange.values[a][c]);
+        if (tCase.children) {
+          tCase.children.forEach(function (child) {
+            iChange.casesIDs.push(child.get('id'));
+            child.setValue( childAttrSpecs[a].attributeID, iChange.values[a][c]);
+          });
+        }
       }
       tCase.endCaseValueChanges();
     }
@@ -1238,15 +1258,29 @@ DG.DataContext = SC.Object.extend((function() // closure
   
   /**
     Sets the values of the specified case from the specified array of values.
-    @param    {DG.Case}   The case whose values are to be set
-    @param    {Array of values} The values to use in setting the case values
-    @param    {DG.CollectionClient} iCollection (optional) -- The collection which owns the case.
+    @param  {DG.Case}       iCase     The case whose values are to be set
+    @param  {[values]}      iValues   The values to use in setting the case values
+    @param  {DG.CollectionClient} iCollection (optional) -- The collection which owns the case.
               Will be looked up if it isn't provided, but more efficient if the client provides it.
+    @return {[number]}      array of affected case ids.
    */
   setCaseValuesFromArray: function( iCase, iValues, iCollection) {
+    var caseIDs = [];
     var collection = iCollection || this.getCollectionForCase( iCase);
-    if( collection)
+    var childCollection = this.getChildCollection(collection);
+    if( collection) {
       collection.setCaseValuesFromArray( iCase, iValues);
+      caseIDs.push(iCase.id);
+      if (iCase.children && iCase.children.length>0) {
+        iCase.children.forEach(function (child) {
+          if (childCollection) {
+            caseIDs.push(child.id);
+            childCollection.setCaseValuesFromArray(child, iValues);
+          }
+        });
+      }
+    }
+    return caseIDs;
   },
   
   /**
