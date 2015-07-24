@@ -279,7 +279,7 @@ DG.DataContext = SC.Object.extend((function() // closure
       var parentAttributes = [];
       parentCollection.forEachAttribute(function (attribute) {
         var props = attribute.toArchive();
-        props.guid = undefined;
+        delete props.guid;
         parentAttributes.push(props);
       });
       return parentAttributes;
