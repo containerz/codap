@@ -30,6 +30,7 @@
 
   @extends SC.Object
 */
+/*global: sc_super */
 DG.DataContext = SC.Object.extend((function() // closure
 /** @scope DG.DataContext.prototype */ {
 
@@ -69,7 +70,7 @@ DG.DataContext = SC.Object.extend((function() // closure
     Array of change objects that have been applied to/by this data context.
     Newly-applied changes are appended to the array, so the most recent changes
     are at the end.
-    @property   {Array of Object} Array of change objects
+    @property   {[Object]} Array of change objects
    */
   changes: null,
   
@@ -104,6 +105,7 @@ DG.DataContext = SC.Object.extend((function() // closure
     sc_super();
     this._collectionClients = {};
     this.changes = [];
+    this.hiddenCollections = [];
   },
 
   /**
@@ -121,7 +123,7 @@ DG.DataContext = SC.Object.extend((function() // closure
   /**
     Returns an array of DG.Case objects corresponding to the selected cases.
     Note that the cases may come from multiple collections within the data context.
-    @returns    {Array of DG.Case}    The currently selected cases
+    @returns    {[DG.Case]}    The currently selected cases
    */
   getSelectedCases: function() {
     var i, collectionCount = this.get('collectionCount'),
@@ -173,7 +175,7 @@ DG.DataContext = SC.Object.extend((function() // closure
   /**
     Returns an array of change objects which correspond to the changes that have
     occurred since the last change notification.
-    @property   {Array of Object}
+    @property   {[Object]}
    */
   newChanges: function() {
     var changesLength = this.changes && this.changes.length,
@@ -263,7 +265,7 @@ DG.DataContext = SC.Object.extend((function() // closure
       DG.dirtyCurrentDocument(this.get('model'));
     return result;
   },
-  
+
   /**
     Creates a collection according to the arguments specified.
     @param  {{operation:String, properties: Object, attributes: [DG.Attribute]}} iChange
@@ -275,7 +277,7 @@ DG.DataContext = SC.Object.extend((function() // closure
                                     result.collection -- the newly created collection
    */
   doCreateCollection: function( iChange) {
-    function addParentAttributes(parentCollection, thisCollection) {
+    function assembleInheritedAttributes(parentCollection) {
       var parentAttributes = [];
       parentCollection.forEachAttribute(function (attribute) {
         var props = attribute.toArchive();
@@ -289,7 +291,7 @@ DG.DataContext = SC.Object.extend((function() // closure
       attributes = iChange.attributes;
     if (tCollection) {
       if (!SC.none(tParentID)) {
-        attributes = addParentAttributes(
+        attributes = assembleInheritedAttributes(
           this.getCollectionByID(tParentID), tCollection).concat(attributes);
       }
       attributes.forEach( function( iAttrSpec) {
@@ -301,7 +303,7 @@ DG.DataContext = SC.Object.extend((function() // closure
       tCollection.reorderAttributes(attributes.getEach('name'));
       return { success: true, collection: tCollection };
     }
-    return { success: false };
+    return { success: false, collection: null };
   },
   
   /**
