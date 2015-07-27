@@ -102,6 +102,7 @@ DG.CaseTableController = DG.ComponentController.extend(
       updateTableAdapters: function() {
         var dataContext = this.get('dataContext'),
             collectionRecords = this.getPath('dataContext.collections') || [],
+            numCollections = collectionRecords.length,
             prevAdapters = this.caseTableAdapters,
             newAdapters = [];
         
@@ -137,7 +138,7 @@ DG.CaseTableController = DG.ComponentController.extend(
           newAdapters.push( adapter);
         }
         
-        collectionRecords.forEach( guaranteeAdapterForCollectionRecord);
+        if (numCollections > 0) guaranteeAdapterForCollectionRecord(collectionRecords[numCollections-1]);
       },
       
       /**
@@ -326,7 +327,7 @@ DG.CaseTableController = DG.ComponentController.extend(
       
       /**
         Called when the data context notifies that case values have changed.
-        @param  {Object}  An object describing the nature of the change
+        @param  {{cases: []}}  iChange An object describing the nature of the change
        */
       doChangeCaseValues: function( iChange) {
         var adapters = this.get('caseTableAdapters');
@@ -339,7 +340,7 @@ DG.CaseTableController = DG.ComponentController.extend(
       
       /**
         Called when the data context notifies that attribute properties have changed.
-        @param  {Object}  An object describing the nature of the change
+        @param  {Object}  iChange An object describing the nature of the change
        */
       doUpdateAttributes: function( iChange) {
         var hierTableView = this.getPath('view.contentView'),
@@ -426,16 +427,16 @@ DG.CaseTableController = DG.ComponentController.extend(
         var tDataContext = this.get('dataContext'),
             tChildCollection = tDataContext && tDataContext.get('childCollection'),
             tChildCollectionName = tChildCollection && tChildCollection.get('name'),
-            tParentCollection = tDataContext && tDataContext.get('parentCollection'),
-            tParentCollectionName = tParentCollection && tParentCollection.get('name'),
+            //tParentCollection = tDataContext && tDataContext.get('parentCollection'),
+            //tParentCollectionName = tParentCollection && tParentCollection.get('name'),
             tSelection = tDataContext && tDataContext.getSelectedCases(),
             tDeleteIsEnabled = tSelection && tSelection.get('length'),
             tNewAttrMenuItemStringKey = 'DG.TableController.gearMenuItems.newAttribute',
             tItems = [];
-        if( !SC.empty( tParentCollectionName)) {
-          tItems.push({ title: tNewAttrMenuItemStringKey.loc( tParentCollectionName),
-                        target: this, itemAction: this.newParentAttribute });
-        }
+        //if( !SC.empty( tParentCollectionName)) {
+        //  tItems.push({ title: tNewAttrMenuItemStringKey.loc( tParentCollectionName),
+        //                target: this, itemAction: this.newParentAttribute });
+        //}
         if( !SC.empty( tChildCollectionName)) {
           tItems.push({
             title: tNewAttrMenuItemStringKey.loc( tChildCollectionName),
