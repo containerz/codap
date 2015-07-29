@@ -112,7 +112,7 @@ DG.DataSet = SC.Object.extend((function() // closure
         if (row.deleted) {
           delete rows[ix];
         }
-      })
+      });
     }
 
   };

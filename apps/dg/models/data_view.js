@@ -51,7 +51,7 @@ DG.DataView = SC.Object.extend((function() // closure
         var nextGroupAttrIndex = nextGroup?nextGroup.attrIndex:dataView.attrs.length;
         var attributes = [];
         var ix;
-        for (ix = attrIndex; ix < nextGroupAttrIndex; ix += 1) {
+        for (ix = this.attrIndex; ix < nextGroupAttrIndex; ix += 1) {
           attributes.push(dataView.attrs[ix]);
         }
         return attributes;
