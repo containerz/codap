@@ -9940,15 +9940,14 @@ CloudFileManagerClient = (function() {
   };
 
   CloudFileManagerClient.prototype.saveContent = function(stringContent, callback) {
-    var provider, ref;
+    var ref;
     if (callback == null) {
       callback = null;
     }
-    provider = (ref = this.state.metadata) != null ? ref.provider : void 0;
-    if (provider != null) {
-      return provider.authorized((function(_this) {
+    if (((ref = this.state.metadata) != null ? ref.provider : void 0) != null) {
+      return this.state.metadata.provider.authorized((function(_this) {
         return function(isAuthorized) {
-          if (isAuthorized || !provider.isAuthorizationRequired()) {
+          if (isAuthorized) {
             return _this.saveFile(stringContent, _this.state.metadata, callback);
           } else {
             return _this.confirmAuthorizeAndSave(stringContent, callback);
@@ -10344,8 +10343,8 @@ CloudFileManagerClient = (function() {
     }
     shouldAutoSave = (function(_this) {
       return function() {
-        var ref, ref1, ref2;
-        return _this.state.dirty && !((ref = _this.state.metadata) != null ? ref.autoSaveDisabled : void 0) && !_this.isSaveInProgress() && ((ref1 = _this.state.metadata) != null ? (ref2 = ref1.provider) != null ? ref2.can('save') : void 0 : void 0);
+        var ref, ref1, ref2, ref3;
+        return _this.state.dirty && !((ref = _this.appOptions.hashParams) != null ? ref.runAsGuest : void 0) && !((ref1 = _this.state.metadata) != null ? ref1.autoSaveDisabled : void 0) && !_this.isSaveInProgress() && ((ref2 = _this.state.metadata) != null ? (ref3 = ref2.provider) != null ? ref3.can('save') : void 0 : void 0);
       };
     })(this);
     if (interval > 1000) {
@@ -10574,13 +10573,15 @@ module.exports = {
 
 
 },{"./providers/document-store-provider":50,"./providers/google-drive-provider":51,"./providers/local-file-provider":52,"./providers/localstorage-provider":53,"./providers/provider-interface":54,"./providers/readonly-provider":55,"./ui":56,"./utils/is-string":60,"./utils/translate":62}],50:[function(require,module,exports){
-var CloudMetadata, DocumentStoreAuthorizationDialog, DocumentStoreProvider, ProviderInterface, authorizeUrl, button, checkLoginUrl, cloudContentFactory, div, documentStore, isString, jiff, listUrl, loadDocumentUrl, pako, patchDocumentUrl, ref, removeDocumentUrl, renameDocumentUrl, saveDocumentUrl, span, tr,
+var CloudMetadata, DocumentStoreAuthorizationDialog, DocumentStoreProvider, ProviderInterface, authorizeUrl, button, checkLoginUrl, cloudContentFactory, div, documentStore, getQueryParam, isString, jiff, listUrl, loadDocumentUrl, pako, patchDocumentUrl, ref, removeDocumentUrl, renameDocumentUrl, saveDocumentUrl, span, tr,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
 ref = React.DOM, div = ref.div, button = ref.button, span = ref.span;
 
-documentStore = "//document-store.concord.org";
+getQueryParam = require('../utils/get-query-param');
+
+documentStore = getQueryParam('documentServer') || "//document-store.concord.org";
 
 authorizeUrl = documentStore + "/user/authenticate";
 
@@ -10960,9 +10961,6 @@ DocumentStoreProvider = (function(superClass) {
     if (metadata.providerData.id) {
       params.recordid = metadata.providerData.id;
     }
-    if (this.client.appOptions.hashParams.runKey) {
-      params.runKey = this.client.appOptions.hashParams.runKey;
-    }
     willPatch = false;
     mimeType = 'application/json';
     contentJson = JSON.stringify(content);
@@ -11156,7 +11154,7 @@ DocumentStoreProvider = (function(superClass) {
 module.exports = DocumentStoreProvider;
 
 
-},{"../utils/is-string":60,"../utils/translate":62,"./provider-interface":54,"jiff":16,"pako":30}],51:[function(require,module,exports){
+},{"../utils/get-query-param":58,"../utils/is-string":60,"../utils/translate":62,"./provider-interface":54,"jiff":16,"pako":30}],51:[function(require,module,exports){
 var CloudMetadata, GoogleDriveAuthorizationDialog, GoogleDriveProvider, ProviderInterface, button, cloudContentFactory, div, isString, jsdiff, ref, span, tr,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
